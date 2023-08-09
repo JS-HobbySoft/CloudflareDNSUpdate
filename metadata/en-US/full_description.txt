@@ -1,0 +1,12 @@
+This app will update a Cloudflare DNS entry using the Cloudflare API.  Periodic updates can also be performed using a service.   This app only updates type A records.  
+
+This app is not developed or endorsed by Cloudflare.  
+
+This app has no ads or in-app purchases and collects no data.  
+
+Source code is available on Github: https://github.com/JS-HobbySoft/CloudflareDnsUpdate
+
+The source code is licensed under AGPL-3.0-or-later.  
+
+The app icon was created with Stable Diffusion.
+
