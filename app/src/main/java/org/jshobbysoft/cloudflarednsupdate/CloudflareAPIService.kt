@@ -31,7 +31,9 @@ private val retrofitKey = Retrofit.Builder()
 
 @OptIn(ExperimentalSerializationApi::class)
 private val retrofitJSON = Retrofit.Builder()
-    .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+    .addConverterFactory(Json{
+            ignoreUnknownKeys = true
+        }.asConverterFactory("application/json".toMediaType()))
     .baseUrl(BASE_URL)
     .build()
 
