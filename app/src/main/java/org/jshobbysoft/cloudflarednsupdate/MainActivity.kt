@@ -272,7 +272,7 @@ class MainActivity : ComponentActivity() {
                                                 }
                                                 formatErrors = true
                                             }
-                                            val re = Regex("[_0-9A-z\-]+")
+                                            val re = Regex("[_0-9A-z\\-]+")
                                             if (!userInputApiKey.matches(re)) {
                                                 scope.launch {
                                                     snackBarHostState.showSnackbar("API token must only contain numbers, letters, underscore, and hyphen")
