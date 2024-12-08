@@ -24,6 +24,7 @@ private const val BASE_URL =
 /**
  * Use the Retrofit builder to build a retrofit object using a kotlinx.serialization converter
  */
+//val rf = Retrofit.Builder().build()
 private val retrofitKey = Retrofit.Builder()
     .addConverterFactory(ScalarsConverterFactory.create())
     .baseUrl(BASE_URL)
