@@ -457,7 +457,7 @@ class MainActivity : ComponentActivity() {
                                                 }
                                             }
                                             if (!numFormatError) {
-                                                if (userInputRefreshInterval.toInt() > 7200 || userInputRefreshInterval.toInt() < 600) {
+                                                if (userInputRefreshInterval.toInt() !in 600..7200) {
                                                     scope.launch {
                                                         snackBarHostState.showSnackbar("Refresh interval must be between 600-7200")
                                                     }
