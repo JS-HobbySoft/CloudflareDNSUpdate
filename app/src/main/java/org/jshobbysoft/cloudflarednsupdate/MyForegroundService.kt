@@ -126,7 +126,11 @@ class MyForegroundService : Service() {
                                     jsonObject.put("content", myIP)
                                     jsonObject.put("name", serviceHostName)
                                     jsonObject.put("proxied", false)
-                                    jsonObject.put("type", "A")
+                                    if (myIP.contains(":")){
+                                        jsonObject.put("type", "AAAA")
+                                    } else {
+                                        jsonObject.put("type", "A")
+                                    }
                                     jsonObject.put("ttl", 1)
                                     val apiBody = jsonObject.toString().toRequestBody(mediaType)
 

@@ -531,7 +531,11 @@ class MainActivity : ComponentActivity() {
         jsonObject.put("content", updateIP)
         jsonObject.put("name", updateHostName)
         jsonObject.put("proxied", false)
-        jsonObject.put("type", "A")
+        if (updateIP.contains(":")){
+            jsonObject.put("type", "AAAA")
+        } else {
+            jsonObject.put("type", "A")
+        }
         jsonObject.put("ttl", 1)
         return jsonObject.toString().toRequestBody(mediaType)
     }
