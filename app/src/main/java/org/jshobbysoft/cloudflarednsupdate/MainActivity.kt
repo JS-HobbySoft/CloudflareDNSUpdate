@@ -240,22 +240,11 @@ class MainActivity : ComponentActivity() {
                                     Button(
                                         onClick = {
                                             var formatErrors = false
-                                            if (Build.VERSION.SDK_INT >= 29) {
-                                                if (!InetAddresses.isNumericAddress(userInputIP)) {
-                                                    scope.launch {
-                                                        snackBarHostState.showSnackbar("IP address format error")
-                                                    }
-                                                    formatErrors = true
+                                            if (!isValidInetAddress(userInputIP)) {
+                                                scope.launch {
+                                                    snackBarHostState.showSnackbar("IP address format error")
                                                 }
-                                            } else {
-                                                if (!Patterns.IP_ADDRESS.matcher(userInputIP)
-                                                        .matches()
-                                                ) {
-                                                    scope.launch {
-                                                        snackBarHostState.showSnackbar("IP address format error")
-                                                    }
-                                                    formatErrors = true
-                                                }
+                                                formatErrors = true
                                             }
                                             if (!Patterns.DOMAIN_NAME.matcher(userInputHostName)
                                                     .matches()
@@ -538,5 +527,24 @@ class MainActivity : ComponentActivity() {
         jsonObject.put("type", "A")
         jsonObject.put("ttl", 1)
         return jsonObject.toString().toRequestBody(mediaType)
+    }
+
+    private fun isValidIPV4(ip: String): Boolean {
+        return Patterns.IP_ADDRESS.matcher(ip).matches()
+    }
+
+    private fun isValidIPV6(ip: String): Boolean {
+        // Regex for IPv6 (full and compressed) from https://stackoverflow.com/questions/53497/regular-expression-that-matches-valid-ipv6-addresses
+        val ipv6Regex =
+            Regex("^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]+|::(ffff(:0{1,4})?:)?((25[0-5]|(2[0-4]|1?[0-9])?[0-9]).){3}(25[0-5]|(2[0-4]|1?[0-9])?[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1?[0-9])?[0-9]).){3}(25[0-5]|(2[0-4]|1?[0-9])?[0-9]))$")
+        return ipv6Regex.matches(ip)
+    }
+
+    private fun isValidInetAddress(ip: String): Boolean {
+        return if (Build.VERSION.SDK_INT >= 29) {
+            InetAddresses.isNumericAddress(ip)
+        } else {
+            isValidIPV4(ip) || isValidIPV6(ip)
+        }
     }
 }
