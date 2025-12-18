@@ -101,12 +101,18 @@ class MyForegroundService : Service() {
                     scope.launch {
                         myIP = URL("https://icanhazip.com/").readText().replace("\n", "")
 
+                        var dnsType = "A"
+                        if (myIP.contains(":")) {
+                            dnsType = "AAAA"
+                        }
+
                         val hostUrl =
                             "https://api.cloudflare.com/client/v4/zones/" +
                                     serviceZoneId +
                                     "/dns_records?name=" +
                                     serviceHostName +
-                                    "&type=A"
+                                    "&type=" +
+                                    dnsType
                         val hostIDTestResult =
                             CloudflareAPIHostID.retrofitService.checkAPIHostID(
                                 hostUrl,

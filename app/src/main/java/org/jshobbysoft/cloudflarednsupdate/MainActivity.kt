@@ -314,12 +314,18 @@ class MainActivity : ComponentActivity() {
                                                     **********************************************************************************
                                                     */
                                                     try {
+                                                        var dnsType = "A"
+                                                        if (userInputIP.contains(":")) {
+                                                            dnsType = "AAAA"
+                                                        }
+
                                                         val hostUrl =
                                                             "https://api.cloudflare.com/client/v4/zones/" +
                                                                     zoneIdValue +
                                                                     "/dns_records?name=" +
                                                                     userInputHostName +
-                                                                    "&type=A"
+                                                                    "&type=" +
+                                                                    dnsType
                                                         val hostIDTestResult =
                                                             CloudflareAPIHostID.retrofitService.checkAPIHostID(
                                                                 hostUrl,
