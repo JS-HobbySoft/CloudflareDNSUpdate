@@ -331,29 +331,39 @@ class MainActivity : ComponentActivity() {
                                                                 hostUrl,
                                                                 getHeaderMap(userInputApiKey)
                                                             )
+//                                                        println(hostIDTestResult)
                                                         if (hostIDTestResult.success) {
-                                                            for (item in hostIDTestResult.result) {
-                                                                if (item.name == userInputHostName) {
-                                                                    snackBarHostState.showSnackbar(
-                                                                        "Retrieved host ID for $userInputHostName",
-                                                                        duration = SnackbarDuration.Short
-                                                                    )
-                                                                    hostIdentifier = item.id!!
-                                                                    hasHostId = true
-                                                                } else {
-                                                                    snackBarHostState.showSnackbar(
-                                                                        "Host ID for $userInputHostName not found",
-                                                                        duration = SnackbarDuration.Short
-                                                                    )
-                                                                }
-                                                                if (item.content == userInputIP) {
-                                                                    snackBarHostState.showSnackbar("IP address is already ${item.content} and does not require update")
-                                                                    ipNeedsUpdate = false
+                                                            if (hostIDTestResult.result_info?.count == 0) {
+                                                                snackBarHostState.showSnackbar(
+                                                                    "Error: Host ID for $userInputHostName with $dnsType record not found",
+                                                                    duration = SnackbarDuration.Short
+                                                                )
+                                                            } else {
+                                                                for (item in hostIDTestResult.result) {
+                                                                    if (item.name == userInputHostName) {
+                                                                        snackBarHostState.showSnackbar(
+                                                                            "Retrieved host ID for $userInputHostName",
+                                                                            duration = SnackbarDuration.Short
+                                                                        )
+                                                                        hostIdentifier = item.id!!
+                                                                        hasHostId = true
+                                                                    }
+                                                                    if (item.content == userInputIP) {
+                                                                        snackBarHostState.showSnackbar(
+                                                                            "IP address is already ${item.content} and does not require update"
+                                                                        )
+                                                                        ipNeedsUpdate = false
+                                                                    }
                                                                 }
                                                             }
+                                                        } else {
+                                                            snackBarHostState.showSnackbar(
+                                                                "Error retrieving host ID",
+                                                                duration = SnackbarDuration.Short
+                                                            )
                                                         }
                                                     } catch (e: Exception) {
-                                                        snackBarHostState.showSnackbar("Host ID error: $e")
+                                                        snackBarHostState.showSnackbar("Error: Host ID error: $e")
                                                         println(e)
                                                     }
                                                     if (hasHostId && hasZoneId && ipNeedsUpdate) {
