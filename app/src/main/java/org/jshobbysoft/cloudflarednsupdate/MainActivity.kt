@@ -55,6 +55,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.jshobbysoft.cloudflarednsupdate.ui.theme.CloudflareDNSUpdateTheme
 import org.json.JSONObject
 import java.net.URL
+import java.nio.charset.Charset
 
 class MainActivity : ComponentActivity() {
 
@@ -152,7 +153,7 @@ class MainActivity : ComponentActivity() {
                                         onClick = {
                                             scope.launch {
                                                 try {
-                                                    val url = URL("https://icanhazip.com/").readText()
+                                                    val url = URL("https://icanhazip.com/").readText().replace("\n", "")
                                                     userInputIP = url
                                                 } catch (e: Exception) {
                                                     snackBarHostState.showSnackbar("Error in IP address retrieval: $e")
@@ -242,7 +243,7 @@ class MainActivity : ComponentActivity() {
                                             var formatErrors = false
                                             if (!isValidInetAddress(userInputIP)) {
                                                 scope.launch {
-                                                    snackBarHostState.showSnackbar("IP address format error")
+                                                    snackBarHostState.showSnackbar("IP address format error: $userInputIP")
                                                 }
                                                 formatErrors = true
                                             }
@@ -541,6 +542,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun isValidInetAddress(ip: String): Boolean {
+//        if (Build.VERSION.SDK_INT >= 29) {println(ip.toBinaryString())}
         return if (Build.VERSION.SDK_INT >= 29) {
             InetAddresses.isNumericAddress(ip)
         } else {
@@ -548,3 +550,26 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+//fun String.toBinaryString(charset: Charset = Charsets.UTF_8): String {
+//    // Convert the string to a ByteArray using the specified character set
+//    val bytes = this.toByteArray(charset)
+//
+//    // Use a StringBuilder to efficiently build the final binary string
+//    val binaryStringBuilder = StringBuilder()
+//
+//    for (byte in bytes) {
+//        // Convert each byte to its binary representation as an integer.
+//        // The `b.toInt() and 0xFF` ensures we treat the byte as an unsigned value
+//        // so that negative bytes don't interfere with the conversion.
+//        val binary = Integer.toBinaryString(byte.toInt() and 0xFF)
+//
+//        // Pad the binary string with leading zeros to ensure it's always 8 bits long
+//        val paddedBinary = binary.padStart(8, '0')
+//
+//        binaryStringBuilder.append(paddedBinary).append(" ")
+//    }
+//
+//    // Return the result, trimming any trailing space
+//    return binaryStringBuilder.toString().trim()
+//}
