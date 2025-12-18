@@ -152,8 +152,7 @@ class MainActivity : ComponentActivity() {
                                         onClick = {
                                             scope.launch {
                                                 try {
-                                                    val url =
-                                                        URL("http://whatismyip.akamai.com/").readText()
+                                                    val url = URL("https://icanhazip.com/").readText()
                                                     userInputIP = url
                                                 } catch (e: Exception) {
                                                     snackBarHostState.showSnackbar("Error in IP address retrieval: $e")
