@@ -5,7 +5,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.IBinder
@@ -57,7 +56,7 @@ class MyForegroundService : Service() {
             NotificationManager.IMPORTANCE_DEFAULT
         )
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
 
 //        https://developer.android.com/develop/ui/views/notifications/build-notification#Actions
@@ -100,14 +99,20 @@ class MyForegroundService : Service() {
             override fun run() {
                 try {
                     scope.launch {
-                        myIP = URL("http://whatismyip.akamai.com/").readText()
+                        myIP = URL("https://icanhazip.com/").readText().replace("\n", "")
+
+                        var dnsType = "A"
+                        if (myIP.contains(":")) {
+                            dnsType = "AAAA"
+                        }
 
                         val hostUrl =
                             "https://api.cloudflare.com/client/v4/zones/" +
                                     serviceZoneId +
                                     "/dns_records?name=" +
                                     serviceHostName +
-                                    "&type=A"
+                                    "&type=" +
+                                    dnsType
                         val hostIDTestResult =
                             CloudflareAPIHostID.retrofitService.checkAPIHostID(
                                 hostUrl,
@@ -121,7 +126,11 @@ class MyForegroundService : Service() {
                                     jsonObject.put("content", myIP)
                                     jsonObject.put("name", serviceHostName)
                                     jsonObject.put("proxied", false)
-                                    jsonObject.put("type", "A")
+                                    if (myIP.contains(":")){
+                                        jsonObject.put("type", "AAAA")
+                                    } else {
+                                        jsonObject.put("type", "A")
+                                    }
                                     jsonObject.put("ttl", 1)
                                     val apiBody = jsonObject.toString().toRequestBody(mediaType)
 
@@ -152,7 +161,7 @@ class MyForegroundService : Service() {
         return START_STICKY
     }
 
-    override fun onBind(intent: Intent?): IBinder? {
+    override fun onBind(intent: Intent?): IBinder {
         TODO("Not yet implemented")
     }
 

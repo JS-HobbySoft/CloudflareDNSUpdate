@@ -55,6 +55,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.jshobbysoft.cloudflarednsupdate.ui.theme.CloudflareDNSUpdateTheme
 import org.json.JSONObject
 import java.net.URL
+//import java.nio.charset.Charset
 
 class MainActivity : ComponentActivity() {
 
@@ -152,8 +153,7 @@ class MainActivity : ComponentActivity() {
                                         onClick = {
                                             scope.launch {
                                                 try {
-                                                    val url =
-                                                        URL("http://whatismyip.akamai.com/").readText()
+                                                    val url = URL("https://icanhazip.com/").readText().replace("\n", "")
                                                     userInputIP = url
                                                 } catch (e: Exception) {
                                                     snackBarHostState.showSnackbar("Error in IP address retrieval: $e")
@@ -241,22 +241,11 @@ class MainActivity : ComponentActivity() {
                                     Button(
                                         onClick = {
                                             var formatErrors = false
-                                            if (Build.VERSION.SDK_INT >= 29) {
-                                                if (!InetAddresses.isNumericAddress(userInputIP)) {
-                                                    scope.launch {
-                                                        snackBarHostState.showSnackbar("IP address format error")
-                                                    }
-                                                    formatErrors = true
+                                            if (!isValidInetAddress(userInputIP)) {
+                                                scope.launch {
+                                                    snackBarHostState.showSnackbar("IP address format error: $userInputIP")
                                                 }
-                                            } else {
-                                                if (!Patterns.IP_ADDRESS.matcher(userInputIP)
-                                                        .matches()
-                                                ) {
-                                                    scope.launch {
-                                                        snackBarHostState.showSnackbar("IP address format error")
-                                                    }
-                                                    formatErrors = true
-                                                }
+                                                formatErrors = true
                                             }
                                             if (!Patterns.DOMAIN_NAME.matcher(userInputHostName)
                                                     .matches()
@@ -325,40 +314,56 @@ class MainActivity : ComponentActivity() {
                                                     **********************************************************************************
                                                     */
                                                     try {
+                                                        var dnsType = "A"
+                                                        if (userInputIP.contains(":")) {
+                                                            dnsType = "AAAA"
+                                                        }
+
                                                         val hostUrl =
                                                             "https://api.cloudflare.com/client/v4/zones/" +
                                                                     zoneIdValue +
                                                                     "/dns_records?name=" +
                                                                     userInputHostName +
-                                                                    "&type=A"
+                                                                    "&type=" +
+                                                                    dnsType
                                                         val hostIDTestResult =
                                                             CloudflareAPIHostID.retrofitService.checkAPIHostID(
                                                                 hostUrl,
                                                                 getHeaderMap(userInputApiKey)
                                                             )
+//                                                        println(hostIDTestResult)
                                                         if (hostIDTestResult.success) {
-                                                            for (item in hostIDTestResult.result) {
-                                                                if (item.name == userInputHostName) {
-                                                                    snackBarHostState.showSnackbar(
-                                                                        "Retrieved host ID for $userInputHostName",
-                                                                        duration = SnackbarDuration.Short
-                                                                    )
-                                                                    hostIdentifier = item.id!!
-                                                                    hasHostId = true
-                                                                } else {
-                                                                    snackBarHostState.showSnackbar(
-                                                                        "Host ID for $userInputHostName not found",
-                                                                        duration = SnackbarDuration.Short
-                                                                    )
-                                                                }
-                                                                if (item.content == userInputIP) {
-                                                                    snackBarHostState.showSnackbar("IP address is already ${item.content} and does not require update")
-                                                                    ipNeedsUpdate = false
+                                                            if (hostIDTestResult.result_info?.count == 0) {
+                                                                snackBarHostState.showSnackbar(
+                                                                    "Error: Host ID for $userInputHostName with $dnsType record not found",
+                                                                    duration = SnackbarDuration.Short
+                                                                )
+                                                            } else {
+                                                                for (item in hostIDTestResult.result) {
+                                                                    if (item.name == userInputHostName) {
+                                                                        snackBarHostState.showSnackbar(
+                                                                            "Retrieved host ID for $userInputHostName",
+                                                                            duration = SnackbarDuration.Short
+                                                                        )
+                                                                        hostIdentifier = item.id!!
+                                                                        hasHostId = true
+                                                                    }
+                                                                    if (item.content == userInputIP) {
+                                                                        snackBarHostState.showSnackbar(
+                                                                            "IP address is already ${item.content} and does not require update"
+                                                                        )
+                                                                        ipNeedsUpdate = false
+                                                                    }
                                                                 }
                                                             }
+                                                        } else {
+                                                            snackBarHostState.showSnackbar(
+                                                                "Error retrieving host ID",
+                                                                duration = SnackbarDuration.Short
+                                                            )
                                                         }
                                                     } catch (e: Exception) {
-                                                        snackBarHostState.showSnackbar("Host ID error: $e")
+                                                        snackBarHostState.showSnackbar("Error: Host ID error: $e")
                                                         println(e)
                                                     }
                                                     if (hasHostId && hasZoneId && ipNeedsUpdate) {
@@ -408,7 +413,7 @@ class MainActivity : ComponentActivity() {
                                 Row(
                                     modifier = Modifier
                                         .padding(all = 10.dp)
-                                        .height(64.dp)
+                                        .height(70.dp)
                                         .fillMaxWidth(),
                                     horizontalArrangement = Arrangement.Start,
                                     verticalAlignment = Alignment.CenterVertically
@@ -453,11 +458,11 @@ class MainActivity : ComponentActivity() {
                                                 numFormatError = false
                                             } catch (e: Exception) {
                                                 scope.launch {
-                                                    snackBarHostState.showSnackbar("Format error: Refresh interval must be an integer number")
+                                                    snackBarHostState.showSnackbar("Format error: Refresh interval must be an integer number: $e")
                                                 }
                                             }
                                             if (!numFormatError) {
-                                                if (userInputRefreshInterval.toInt() > 7200 || userInputRefreshInterval.toInt() < 600) {
+                                                if (userInputRefreshInterval.toInt() !in 600..7200) {
                                                     scope.launch {
                                                         snackBarHostState.showSnackbar("Refresh interval must be between 600-7200")
                                                     }
@@ -536,8 +541,55 @@ class MainActivity : ComponentActivity() {
         jsonObject.put("content", updateIP)
         jsonObject.put("name", updateHostName)
         jsonObject.put("proxied", false)
-        jsonObject.put("type", "A")
+        if (updateIP.contains(":")){
+            jsonObject.put("type", "AAAA")
+        } else {
+            jsonObject.put("type", "A")
+        }
         jsonObject.put("ttl", 1)
         return jsonObject.toString().toRequestBody(mediaType)
     }
+
+    private fun isValidIPV4(ip: String): Boolean {
+        return Patterns.IP_ADDRESS.matcher(ip).matches()
+    }
+
+    private fun isValidIPV6(ip: String): Boolean {
+        // Regex for IPv6 (full and compressed) from https://stackoverflow.com/questions/53497/regular-expression-that-matches-valid-ipv6-addresses
+        val ipv6Regex =
+            Regex("^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]+|::(ffff(:0{1,4})?:)?((25[0-5]|(2[0-4]|1?[0-9])?[0-9]).){3}(25[0-5]|(2[0-4]|1?[0-9])?[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1?[0-9])?[0-9]).){3}(25[0-5]|(2[0-4]|1?[0-9])?[0-9]))$")
+        return ipv6Regex.matches(ip)
+    }
+
+    private fun isValidInetAddress(ip: String): Boolean {
+//        if (Build.VERSION.SDK_INT >= 29) {println(ip.toBinaryString())}
+        return if (Build.VERSION.SDK_INT >= 29) {
+            InetAddresses.isNumericAddress(ip)
+        } else {
+            isValidIPV4(ip) || isValidIPV6(ip)
+        }
+    }
 }
+
+//fun String.toBinaryString(charset: Charset = Charsets.UTF_8): String {
+//    // Convert the string to a ByteArray using the specified character set
+//    val bytes = this.toByteArray(charset)
+//
+//    // Use a StringBuilder to efficiently build the final binary string
+//    val binaryStringBuilder = StringBuilder()
+//
+//    for (byte in bytes) {
+//        // Convert each byte to its binary representation as an integer.
+//        // The `b.toInt() and 0xFF` ensures we treat the byte as an unsigned value
+//        // so that negative bytes don't interfere with the conversion.
+//        val binary = Integer.toBinaryString(byte.toInt() and 0xFF)
+//
+//        // Pad the binary string with leading zeros to ensure it's always 8 bits long
+//        val paddedBinary = binary.padStart(8, '0')
+//
+//        binaryStringBuilder.append(paddedBinary).append(" ")
+//    }
+//
+//    // Return the result, trimming any trailing space
+//    return binaryStringBuilder.toString().trim()
+//}
