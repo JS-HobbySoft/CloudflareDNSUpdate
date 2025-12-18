@@ -403,7 +403,7 @@ class MainActivity : ComponentActivity() {
                                 Row(
                                     modifier = Modifier
                                         .padding(all = 10.dp)
-                                        .height(64.dp)
+                                        .height(70.dp)
                                         .fillMaxWidth(),
                                     horizontalArrangement = Arrangement.Start,
                                     verticalAlignment = Alignment.CenterVertically
