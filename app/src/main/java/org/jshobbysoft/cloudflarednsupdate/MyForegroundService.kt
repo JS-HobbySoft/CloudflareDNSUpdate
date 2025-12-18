@@ -5,7 +5,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.IBinder
@@ -57,7 +56,7 @@ class MyForegroundService : Service() {
             NotificationManager.IMPORTANCE_DEFAULT
         )
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
 
 //        https://developer.android.com/develop/ui/views/notifications/build-notification#Actions
@@ -152,7 +151,7 @@ class MyForegroundService : Service() {
         return START_STICKY
     }
 
-    override fun onBind(intent: Intent?): IBinder? {
+    override fun onBind(intent: Intent?): IBinder {
         TODO("Not yet implemented")
     }
 
