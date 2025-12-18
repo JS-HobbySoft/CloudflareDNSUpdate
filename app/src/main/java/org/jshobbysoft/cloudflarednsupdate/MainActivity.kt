@@ -441,7 +441,7 @@ class MainActivity : ComponentActivity() {
                                                 numFormatError = false
                                             } catch (e: Exception) {
                                                 scope.launch {
-                                                    snackBarHostState.showSnackbar("Format error: Refresh interval must be an integer number")
+                                                    snackBarHostState.showSnackbar("Format error: Refresh interval must be an integer number: $e")
                                                 }
                                             }
                                             if (!numFormatError) {
