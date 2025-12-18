@@ -100,7 +100,7 @@ class MyForegroundService : Service() {
             override fun run() {
                 try {
                     scope.launch {
-                        myIP = URL("https://icanhazip.com/").readText()
+                        myIP = URL("https://icanhazip.com/").readText().replace("\n", "")
 
                         val hostUrl =
                             "https://api.cloudflare.com/client/v4/zones/" +
