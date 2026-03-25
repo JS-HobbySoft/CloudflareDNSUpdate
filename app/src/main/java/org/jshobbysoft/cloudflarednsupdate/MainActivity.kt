@@ -26,7 +26,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Button
 //import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -45,8 +47,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import kotlinx.coroutines.CoroutineScope
@@ -500,7 +504,21 @@ class MainActivity : ComponentActivity() {
                                             }
                                         }
                                     ) {
-                                        Text(text = "Start")
+                                        BasicText(
+                                            text = "Start",
+//                                            modifier = Modifier.fillMaxWidth(), // Provide clear width constraints
+                                            style = TextStyle(
+                                                fontSize = 15.sp,  // Start with a max size
+                                                color = Color.White
+                                            ),
+                                            maxLines = 1, // Crucial for horizontal scaling
+                                            autoSize = TextAutoSize.StepBased(
+                                                minFontSize = 5.sp,
+                                                maxFontSize = 15.sp,
+                                                stepSize = 0.5.sp
+                                            )
+                                        )
+//                                        Text(text = "Start")
                                     }
                                     Spacer(modifier = Modifier.width(width = 10.dp))
                                     Button(onClick = {
@@ -516,7 +534,21 @@ class MainActivity : ComponentActivity() {
                                         }
                                     }
                                     ) {
-                                        Text(text = "Stop")
+                                        BasicText(
+                                            text = "Stop",
+//                                            modifier = Modifier.fillMaxWidth(), // Provide clear width constraints
+                                            style = TextStyle(
+                                                fontSize = 15.sp,  // Start with a max size
+                                                color = Color.White
+                                            ),
+                                            maxLines = 1, // Crucial for horizontal scaling
+                                            autoSize = TextAutoSize.StepBased(
+                                                minFontSize = 5.sp,
+                                                maxFontSize = 15.sp,
+                                                stepSize = 0.5.sp
+                                            )
+                                        )
+//                                        Text(text = "Stop")
                                     }
                                 }
                             }
