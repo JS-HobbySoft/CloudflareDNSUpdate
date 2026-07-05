@@ -194,9 +194,9 @@ class MainActivity : ComponentActivity() {
                                     Button(
                                         onClick = {
                                             var formatErrors = false
-                                            if (userInputApiKey.length != 40) {
+                                            if (userInputApiKey.length !in listOf(40, 53, 54)) {
                                                 scope.launch {
-                                                    snackBarHostState.showSnackbar("API token must be 40 characters")
+                                                    snackBarHostState.showSnackbar("API token must be 40, 53, or 54 characters")
                                                 }
                                                 formatErrors = true
                                             }
@@ -267,9 +267,9 @@ class MainActivity : ComponentActivity() {
                                                 }
                                                 formatErrors = true
                                             }
-                                            if (userInputApiKey.length != 40) {
+                                            if (userInputApiKey.length !in listOf(40, 53, 54)) {
                                                 scope.launch {
-                                                    snackBarHostState.showSnackbar("API token must be 40 characters")
+                                                    snackBarHostState.showSnackbar("API token must be 40, 53, or 54 characters")
                                                 }
                                                 formatErrors = true
                                             }
