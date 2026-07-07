@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
@@ -147,8 +146,7 @@ class MainActivity : ComponentActivity() {
 
                                 Row(
                                     modifier = Modifier
-                                        .padding(all = 10.dp)
-                                        .height(64.dp)
+//                                        .padding(all = 10.dp)
                                         .fillMaxWidth(),
                                     horizontalArrangement = Arrangement.Start,
                                     verticalAlignment = Alignment.CenterVertically
@@ -158,9 +156,18 @@ class MainActivity : ComponentActivity() {
                                         onValueChange = { userInputIP = it },
                                         label = { Text("Enter IP address") },
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                        modifier = Modifier.size(170.dp)
+                                        modifier = Modifier.width(400.dp),
+                                        minLines = 2
                                     )
-                                    Spacer(modifier = Modifier.width(width = 10.dp))
+                                }
+                                Row(
+                                    modifier = Modifier
+//                                        .padding(all = 0.dp)
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Start,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+//                                    Spacer(modifier = Modifier.width(width = 10.dp))
                                     Button(
                                         onClick = {
                                             scope.launch {
@@ -171,15 +178,15 @@ class MainActivity : ComponentActivity() {
                                                     snackBarHostState.showSnackbar("Error in IP address retrieval: $e")
                                                 }
                                             }
-                                        }
+                                        },
+                                        modifier = Modifier.width(170.dp)
                                     ) {
                                         Text(text = "Get IP address")
                                     }
                                 }
                                 Row(
                                     modifier = Modifier
-                                        .padding(all = 10.dp)
-                                        .height(64.dp)
+//                                        .padding(all = 10.dp)
                                         .fillMaxWidth(),
                                     horizontalArrangement = Arrangement.Start,
                                     verticalAlignment = Alignment.CenterVertically
@@ -188,9 +195,18 @@ class MainActivity : ComponentActivity() {
                                         value = userInputApiKey,
                                         onValueChange = { userInputApiKey = it },
                                         label = { Text("Enter API token") },
-                                        modifier = Modifier.size(144.dp)
+                                        modifier = Modifier.width(400.dp),
+                                        minLines = 2
                                     )
-                                    Spacer(modifier = Modifier.width(width = 10.dp))
+                                }
+                                Row(
+                                    modifier = Modifier
+//                                        .padding(all = 10.dp)
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Start,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+//                                    Spacer(modifier = Modifier.width(width = 10.dp))
                                     Button(
                                         onClick = {
                                             var formatErrors = false
@@ -223,15 +239,15 @@ class MainActivity : ComponentActivity() {
                                                     }
                                                 }
                                             }
-                                        }
+                                        },
+                                        modifier = Modifier.width(170.dp)
                                     ) {
                                         Text(text = "Test API token")
                                     }
                                 }
                                 Row(
                                     modifier = Modifier
-                                        .padding(all = 10.dp)
-                                        .height(64.dp)
+//                                        .padding(all = 10.dp)
                                         .fillMaxWidth(),
                                     horizontalArrangement = Arrangement.Start,
                                     verticalAlignment = Alignment.CenterVertically
@@ -239,15 +255,15 @@ class MainActivity : ComponentActivity() {
                                     TextField(
                                         value = userInputHostName,
                                         onValueChange = { userInputHostName = it },
-                                        label = { Text("Enter host name to be updated") }
+                                        label = { Text("Enter host name to be updated") },
+                                        modifier = Modifier.width(400.dp)
                                     )
                                 }
                                 Row(
                                     modifier = Modifier
-                                        .padding(all = 10.dp)
-                                        .height(64.dp)
+//                                        .padding(all = 10.dp)
                                         .fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.Center,
+                                    horizontalArrangement = Arrangement.Start,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Button(
@@ -416,7 +432,8 @@ class MainActivity : ComponentActivity() {
                                                     }
                                                 }
                                             }
-                                        }
+                                        },
+                                        modifier = Modifier.width(170.dp)
                                     ) {
                                         Text(text = "Update DNS record")
                                     }
@@ -424,8 +441,7 @@ class MainActivity : ComponentActivity() {
                                 HorizontalDivider(color = Color.Black, thickness = 1.dp)
                                 Row(
                                     modifier = Modifier
-                                        .padding(all = 10.dp)
-                                        .height(70.dp)
+//                                        .padding(all = 10.dp)
                                         .fillMaxWidth(),
                                     horizontalArrangement = Arrangement.Start,
                                     verticalAlignment = Alignment.CenterVertically
@@ -437,9 +453,17 @@ class MainActivity : ComponentActivity() {
                                         },
                                         label = { Text("Refresh interval [sec]\n600-6000, 0 to disable") },
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                        modifier = Modifier.size(170.dp)
+                                        modifier = Modifier.width(170.dp)
                                     )
-                                    Spacer(modifier = Modifier.width(width = 10.dp))
+                                }
+                                Row(
+                                    modifier = Modifier
+//                                        .padding(all = 10.dp)
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Start,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+//                                    Spacer(modifier = Modifier.width(width = 10.dp))
                                     Button(
                                         onClick = {
                                             // https://stackoverflow.com/questions/60608101/how-request-permissions-with-jetpack-compose
